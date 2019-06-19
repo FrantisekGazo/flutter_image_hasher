@@ -5,6 +5,7 @@ import 'package:image_hasher/data/model/download_state.dart';
 import 'package:image_hasher/data/model/downloaded_image.dart';
 import 'package:image_hasher/data/service/download_service.dart';
 import 'package:image_hasher/navigation/navigator.dart';
+import 'package:image_hasher/ui/dialog_image.dart';
 
 ///
 /// Shows main screen for image download
@@ -24,47 +25,65 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text("Downloader"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.list), onPressed: _navigateToListPage)
+          IconButton(icon: Icon(Icons.list), onPressed: _navigateToListPage,),
         ],
       ),
       body: ValueListenableBuilder<DownloadState>(
         valueListenable: _downloadService.downloadState,
         builder: (context, value, _) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextField(
-                    controller: _imageUrlController,
-                    decoration: InputDecoration(hintText: "Image URL"),
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          child: Text("Download"),
-                          onPressed: value.inProgress ? null : _download,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  InkWell(
-                    child: Text(value.error != null
-                        ? "Error: ${value.error}"
-                        : (value.image != null
-                            ? "Image: ${value.image.path}"
-                            : "nothing downloaded")),
-                    onTap: value.image != null ? () => _showImage(value.image) : null,
-                  )
-                ],
-              ),
-            ),
+          return Stack(
+            children: <Widget>[
+              _buildBody(value),
+              if (value.inProgress) _buildProgressOverlay(),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildProgressOverlay() {
+    return Container(
+      color: Colors.white54,
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget _buildBody(DownloadState value) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(
+              controller: _imageUrlController,
+              decoration: InputDecoration(
+                labelText: "Image URL",
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () => _imageUrlController.clear(),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: RaisedButton(
+                    child: Text("Download"),
+                    onPressed: _download,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            if (value.image != null) _ImageHash(image: value.image),
+            if (value.error != null) Text("Error: ${value.error}"),
+          ],
+        ),
       ),
     );
   }
@@ -77,15 +96,31 @@ class _MainScreenState extends State<MainScreen> {
     final url = _imageUrlController.text.trim();
     _downloadService.download(url);
   }
+}
 
-  void _showImage(DownloadedImage image) {
+///
+/// Shows a clickable image hash. When clicked, image dialog will be shown.
+///
+class _ImageHash extends StatelessWidget {
+  final DownloadedImage image;
+
+  const _ImageHash({
+    @required this.image,
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Text("Image: ${image.path}"),
+      onTap: () => _showImage(context),
+    );
+  }
+
+  void _showImage(context) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Image.file(File(image.path)),
-        );
-      },
+      builder: (context) => ImageDialog(imagePath: image.path),
     );
   }
 }

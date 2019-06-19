@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_hasher/data/model/downloaded_image.dart';
 import 'package:image_hasher/data/service/download_service.dart';
+import 'package:image_hasher/ui/dialog_image.dart';
 
 ///
 /// Shows list of all downloaded images.
@@ -62,13 +63,7 @@ class _DownloadedImageListItem extends StatelessWidget {
   void _showImage(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(image.url),
-// test image : content: Image.network("https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.gettyimages.com.au%2Fgi-resources%2Fimages%2Ffrontdoor%2Fcreative%2FPanoramicImagesRM%2FFD_image.jpg&f=1"),
-          content: Image.file(File(image.path)),
-        );
-      },
+      builder: (context) => ImageDialog(imagePath: image.path),
     );
   }
 }
