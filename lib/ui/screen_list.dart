@@ -42,7 +42,7 @@ class ImageListScreen extends StatelessWidget {
 }
 
 ///
-/// Shows and image url. When clicked, a dialog with the image is shown.
+/// Shows an image url. When clicked, a dialog with the image is shown.
 ///
 class _DownloadedImageListItem extends StatelessWidget {
   final DownloadedImage image;

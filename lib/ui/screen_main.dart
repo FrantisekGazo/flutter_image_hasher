@@ -94,7 +94,9 @@ class _MainScreenState extends State<MainScreen> {
 
   Future _download() async {
     final url = _imageUrlController.text.trim();
-    _downloadService.download(url);
+    if (url.isNotEmpty) {
+      _downloadService.download(url);
+    }
   }
 }
 
