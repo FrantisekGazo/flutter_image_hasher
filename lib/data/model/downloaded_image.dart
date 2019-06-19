@@ -11,4 +11,8 @@ class DownloadedImage {
     @required this.url,
     @required this.path,
   });
+
+  DownloadedImage.fromJson(Map<String, dynamic> json)
+      : this.url = json['url'],
+        this.path = json['path'];
 }
