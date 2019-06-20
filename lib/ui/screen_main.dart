@@ -74,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         if (value.image != null) _ImageHash(image: value.image),
-        if (value.error != null) Text("Error: ${value.error}"),
+        if (value.error != null) Center(child: Text("Error: ${value.error}")),
       ],
     );
   }
