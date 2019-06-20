@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_hasher/data/model/download_state.dart';
 import 'package:image_hasher/data/model/downloaded_image.dart';
@@ -16,7 +14,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final _imageUrlController = TextEditingController(text: "https://proxy.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.crestock.com%2Fimages%2Frandomimages%2F1658-6234203-Small.jpg&f=1");
+  final _imageUrlController = TextEditingController();
   final _downloadService = DownloadService();
 
   @override
@@ -114,12 +112,21 @@ class _ImageHash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: Text("Image: ${image.path}"),
-      onTap: () => _showImage(context),
+      onTap: () => _showImageDialog(context),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(image.hash),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  void _showImage(context) {
+  void _showImageDialog(context) {
     showDialog(
       context: context,
       builder: (context) => ImageDialog(imagePath: image.path),

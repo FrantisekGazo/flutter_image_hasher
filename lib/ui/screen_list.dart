@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_hasher/data/model/downloaded_image.dart';
 import 'package:image_hasher/data/service/download_service.dart';
@@ -56,11 +54,11 @@ class _DownloadedImageListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(image.url),
-      onTap: () => _showImage(context),
+      onTap: () => _showImageDialog(context),
     );
   }
 
-  void _showImage(BuildContext context) {
+  void _showImageDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => ImageDialog(imagePath: image.path),

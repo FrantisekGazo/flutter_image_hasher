@@ -22,7 +22,7 @@ object ImageDownloaderService {
       return getAllDownloadedFiles(context)
              .map { DownloadedImage(sp.getString(it.name, ""), it) }
              // make sure there is a url
-             .filter { it.imageUrl.isNotEmpty() }
+             .filter { it.url.isNotEmpty() }
    }
 
    /**
@@ -47,7 +47,7 @@ object ImageDownloaderService {
     */
    private fun storeDownload(context: Context, image: DownloadedImage) {
       val sp = getSharedPreferences(context)
-      sp.edit().putString(image.file.name, image.imageUrl).apply()
+      sp.edit().putString(image.file.name, image.url).apply()
    }
 
    /**
@@ -67,7 +67,7 @@ object ImageDownloaderService {
     * @return [DownloadedImage] if it was already downloaded, otherwise null.
     */
    private fun findDownloadedImage(context: Context, imageUrl: String): DownloadedImage? {
-      return getAllDownloads(context).find { it.imageUrl == imageUrl }
+      return getAllDownloads(context).find { it.url == imageUrl }
    }
 
    /**

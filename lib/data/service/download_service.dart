@@ -76,8 +76,8 @@ class _PlatformInteractor {
   static const platform = const MethodChannel(CHANNEL_NAME, JSONMethodCodec());
 
   Future<DownloadedImage> downloadImageToFile(String url) async {
-    final String path = await platform.invokeMethod(METHOD_DOWNLOAD, url);
-    return DownloadedImage(url: url, path: path);
+    final result = await platform.invokeMethod(METHOD_DOWNLOAD, url);
+    return DownloadedImage.fromJson(result);
   }
 
   Future<List<DownloadedImage>> getDownloadedImages() async {

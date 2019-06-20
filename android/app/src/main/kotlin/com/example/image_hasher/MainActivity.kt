@@ -1,6 +1,7 @@
 package com.example.image_hasher
 
 import android.os.Bundle
+import com.example.image_hasher.data.model.DownloadedImage
 import com.example.image_hasher.data.service.ImageDownloaderService
 
 import io.flutter.app.FlutterActivity
@@ -29,10 +30,13 @@ class MainActivity : FlutterActivity() {
             METHOD_DOWNLOAD -> {
                GlobalScope.launch {
                   // FIXME : check network
+                  // FIXME : add black-and-white convertion
+                  // FIXME : add image hash
                   try {
                      val imageUrl = call.arguments as String
                      val imageFile = ImageDownloaderService.download(applicationContext, imageUrl)
-                     result.success(imageFile.path)
+                     val image = DownloadedImage(imageUrl, imageFile, "1234567890")
+                     result.success(image.toJson())
                   } catch (e: Exception) {
                      result.error("Download failed", e.localizedMessage, null)
                   }
@@ -40,13 +44,7 @@ class MainActivity : FlutterActivity() {
             }
             METHOD_GET_ALL -> {
                val downloads = ImageDownloaderService.getAllDownloads(applicationContext)
-               val json = JSONArray(downloads.map {
-                  JSONObject(mapOf(
-                         "url" to it.imageUrl,
-                         "path" to it.file.path
-                  ))
-               })
-               result.success(json)
+               result.success(downloads.map { it.toJson() })
             }
             else -> result.notImplemented()
          }
