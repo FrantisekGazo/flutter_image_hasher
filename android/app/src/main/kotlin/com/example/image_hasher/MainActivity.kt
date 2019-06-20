@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import android.net.ConnectivityManager
 import com.example.image_hasher.util.downloadTo
+import com.example.image_hasher.util.toBlackAndWhite
 import java.lang.IllegalStateException
 
 class MainActivity : FlutterActivity() {
@@ -69,9 +70,8 @@ class MainActivity : FlutterActivity() {
             throw IllegalStateException("Missing internet connection!")
          }
 
-         val newImageFile = imageStorage.getNewImageFile()
-         url.downloadTo(newImageFile)
-         DownloadedImage(url, newImageFile).apply {
+         val file = url.downloadTo(imageStorage.getNewImageFile()).toBlackAndWhite()
+         DownloadedImage(url, file).apply {
             imageStorage.store(this)
          }
       }
