@@ -14,7 +14,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final _imageUrlController = TextEditingController();
+  final _imageUrlController = TextEditingController(text: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.l1ip_PlX9D3Rubl9JbFvNAAAAA%26pid%3DApi&f=1");
   final _downloadService = DownloadService();
 
   @override
@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text("Downloader"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.list), onPressed: _navigateToListPage,),
+          IconButton(icon: Icon(Icons.list), onPressed: _navigateToListPage),
         ],
       ),
       body: ValueListenableBuilder<DownloadState>(
@@ -50,39 +50,32 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildBody(DownloadState value) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _imageUrlController,
-              decoration: InputDecoration(
-                labelText: "Image URL",
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () => _imageUrlController.clear(),
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: TextField(
+            controller: _imageUrlController,
+            decoration: InputDecoration(
+              labelText: "Image URL",
+              suffixIcon: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => _imageUrlController.clear(),
               ),
             ),
-            SizedBox(height: 16),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                    child: Text("Download"),
-                    onPressed: _download,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            if (value.image != null) _ImageHash(image: value.image),
-            if (value.error != null) Text("Error: ${value.error}"),
-          ],
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: RaisedButton(
+            child: Text("Download"),
+            onPressed: _download,
+          ),
+        ),
+        if (value.image != null) _ImageHash(image: value.image),
+        if (value.error != null) Text("Error: ${value.error}"),
+      ],
     );
   }
 
@@ -101,7 +94,7 @@ class _MainScreenState extends State<MainScreen> {
 ///
 /// Shows a clickable image hash. When clicked, image dialog will be shown.
 ///
-class _ImageHash extends StatelessWidget {
+class _ImageHash extends StatefulWidget {
   final DownloadedImage image;
 
   const _ImageHash({
@@ -110,26 +103,45 @@ class _ImageHash extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<_ImageHash> createState() => _ImageHashState();
+}
+
+class _ImageHashState extends State<_ImageHash> {
+  List<String> _hashLines;
+
+  @override
+  void initState() {
+    super.initState();
+    _hashLines = widget.image.hash.split("\n");
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => _showImageDialog(context),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(image.hash),
-            ),
-          ],
+    return Expanded(
+      child: InkWell(
+        onTap: () => _showImageDialog(context),
+        child: Scrollbar(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _hashLines.length,
+            itemBuilder: _buildHashLine,
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildHashLine(BuildContext context, int index) {
+    if (index < 0 || index > _hashLines.length - 1) {
+      return null;
+    }
+    return Text(_hashLines[index]);
+  }
+
   void _showImageDialog(context) {
     showDialog(
       context: context,
-      builder: (context) => ImageDialog(imagePath: image.path),
+      builder: (context) => ImageDialog(imagePath: widget.image.path),
     );
   }
 }

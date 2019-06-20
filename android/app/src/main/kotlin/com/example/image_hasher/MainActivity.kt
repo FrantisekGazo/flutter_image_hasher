@@ -14,7 +14,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import android.net.ConnectivityManager
-import com.example.image_hasher.util.calculateBase64
 import com.example.image_hasher.util.downloadTo
 import java.lang.IllegalStateException
 
@@ -62,9 +61,9 @@ class MainActivity : FlutterActivity() {
     * INFO: Must be run on background thread because it accesses the internet.
     */
    private fun getDownloadedImage(url: String): DownloadedImage {
-      val alreadyDownloaded = imageStorage.find(url)
-      if (alreadyDownloaded != null) {
-         return alreadyDownloaded
+      val existingImage = imageStorage.find(url)
+      val image = if (existingImage != null) {
+         existingImage
       } else {
          if (!isNetworkConnected()) {
             throw IllegalStateException("Missing internet connection!")
@@ -72,11 +71,11 @@ class MainActivity : FlutterActivity() {
 
          val newImageFile = imageStorage.getNewImageFile()
          url.downloadTo(newImageFile)
-         val hash = newImageFile.calculateBase64()
-         val image = DownloadedImage(url, newImageFile, hash)
-         imageStorage.store(image)
-         return image
+         DownloadedImage(url, newImageFile).apply {
+            imageStorage.store(this)
+         }
       }
+      return image.calculateBase64()
    }
 
    private fun isNetworkConnected(): Boolean {
