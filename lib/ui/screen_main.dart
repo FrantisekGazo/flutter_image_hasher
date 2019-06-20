@@ -14,7 +14,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final _imageUrlController = TextEditingController(text: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.l1ip_PlX9D3Rubl9JbFvNAAAAA%26pid%3DApi&f=1");
+  final _imageUrlController = TextEditingController();
   final _downloadService = DownloadService();
 
   @override
@@ -88,6 +88,12 @@ class _MainScreenState extends State<MainScreen> {
     if (url.isNotEmpty) {
       _downloadService.download(url);
     }
+  }
+
+  @override
+  void dispose() {
+    _imageUrlController.dispose();
+    super.dispose();
   }
 }
 
