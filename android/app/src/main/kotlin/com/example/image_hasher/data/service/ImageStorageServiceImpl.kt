@@ -36,7 +36,7 @@ class ImageStorageServiceImpl(private val context: Context) : ImageStorageServic
 
    override fun getNewImageFile(): File {
       val max = getAllFiles()
-             .map { it.name.toInt() }
+             .map { it.name.toIntOrNull() ?: 0 }
              .max() ?: 0
       val name = (max + 1).toString()
       return getImageFile(name)
