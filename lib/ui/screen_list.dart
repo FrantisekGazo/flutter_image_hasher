@@ -23,14 +23,17 @@ class ImageListScreen extends StatelessWidget {
               child: Text("No images were downloaded yet"),
             );
           } else {
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                if (index < 0 || index > value.length - 1) {
-                  return null;
-                }
+            return Scrollbar(
+              child: ListView.builder(
+                itemCount: value.length,
+                itemBuilder: (context, index) {
+                  if (index < 0 || index > value.length - 1) {
+                    return null;
+                  }
 
-                return _DownloadedImageListItem(image: value[index]);
-              },
+                  return _DownloadedImageListItem(image: value[index]);
+                },
+              ),
             );
           }
         },
